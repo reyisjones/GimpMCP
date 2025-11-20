@@ -1,0 +1,10 @@
+{
+  "github.copilot.chat.codeGeneration.instructions": [
+    {
+      "text": "Use python3 instead of python for all Python commands on macOS"
+    }
+  ],
+  "mcp.tools": [
+    "MCP/gimp-image-gen/manifest.json"
+  ]
+}
