@@ -19,6 +19,7 @@ GIMP MCP is an AI-powered image generation tool that integrates with VS Code thr
 - ⚡ **Fast**: Sub-second generation for sketches, ~10s for AI images
 - 🎨 **Dual Mode**: AI-generated or quick PIL-based drafts
 - 📦 **Batch Processing**: Generate multiple images at once
+- 🎬 **Animation Support**: Create animated GIFs from text sequences
 - 🛠️ **Easy Setup**: Simple bash script for quick generation
 
 ---
@@ -67,6 +68,7 @@ python3 MCP/gimp-image-gen/gimp_image_gen.py \
 ## 📚 Documentation
 
 - **[QUICKSTART.md](QUICKSTART.md)** - Get started in 30 seconds
+- **[ANIMATION_GUIDE.md](ANIMATION_GUIDE.md)** - Create animated GIFs from text sequences
 - **[PROMPT_EXAMPLES.md](PROMPT_EXAMPLES.md)** - 20+ sample prompts and best practices
 - **[INTEGRATION_SUMMARY.md](INTEGRATION_SUMMARY.md)** - Technical implementation details
 - **[CHANGELOG.md](CHANGELOG.md)** - Version history and updates
@@ -107,6 +109,19 @@ Generate multiple images at once:
 python3 batch_generate.py output/storyboards
 ```
 
+### Animation Generation
+
+Create animated GIFs from text sequences:
+```bash
+./generate_animation.sh \
+  "A sunrise over mountains" \
+  "Morning light on peaks" \
+  "Full daylight landscape" \
+  "mountain_animation"
+```
+
+See **[ANIMATION_GUIDE.md](ANIMATION_GUIDE.md)** for detailed animation features.
+
 ---
 
 ## 🎨 Examples
@@ -143,7 +158,10 @@ GimpMCP/
 │       ├── manifest.json       # MCP tool definition
 │       └── gimp_image_gen.py   # Core image generator
 ├── output/                     # Generated images
+├── animations/                 # Animation frames and GIFs
 ├── generate_image.sh           # Quick generation script
+├── generate_animation.sh       # Animation generation script
+├── generate_animation.py       # Animation generator (Python)
 ├── batch_generate.py           # Batch processing
 ├── requirements.txt            # Python dependencies
 └── README.md                   # This file
@@ -224,6 +242,7 @@ chmod +x generate_image.sh
 |------|-------|---------|----------|
 | AI Mode | ~10-15s | High | Final images, presentations |
 | Sketch Mode | <1s | Basic | Placeholders, quick drafts |
+| Animation (5 frames) | ~45s | High | Animated sequences, demos |
 
 ---
 
@@ -232,6 +251,7 @@ chmod +x generate_image.sh
 - [ ] Support for DALL·E and other AI providers
 - [ ] Custom image sizes and aspect ratios
 - [ ] Style transfer from reference images
+- [ ] Video format support (MP4, WebM) for animations
 - [ ] Advanced GIMP scripting integration
 - [ ] WebUI for non-technical users
 
@@ -261,7 +281,7 @@ For questions or issues:
 
 ---
 
-**Version**: 3.0.0  
+**Version**: 3.1.0  
 **Last Updated**: November 19, 2025  
 **Status**: ✅ Production Ready
 
