@@ -1,0 +1,38 @@
+{
+  "name": "gimp-image-gen",
+  "version": "1.0.0",
+  "description": "MCP tool for generating storyboard images from text prompts using PIL/Pillow and optional GIMP processing",
+  "author": "GimpMCP Project",
+  "repository": "https://github.com/your-org/GimpMCP",
+  "tools": [
+    {
+      "name": "gimp-image-gen",
+      "type": "python",
+      "entry": "gimp_image_gen.py",
+      "description": "Generate storyboard images using GIMP from text prompts.",
+      "parameters": {
+        "prompt": {
+          "type": "string",
+          "description": "Text description of the scene or storyboard panel to generate",
+          "required": true
+        },
+        "output_file": {
+          "type": "string",
+          "description": "Path where the generated PNG image will be saved",
+          "required": true
+        }
+      },
+      "returns": {
+        "type": "string",
+        "description": "Path to the generated image file"
+      }
+    }
+  ],
+  "requirements": [
+    "Pillow>=10.0.0",
+    "Python>=3.9"
+  ],
+  "optional_dependencies": [
+    "GIMP>=3.0"
+  ]
+}
