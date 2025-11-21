@@ -13,11 +13,20 @@ from PIL import Image
 sys.path.insert(0, str(Path(__file__).parent / "MCP" / "gimp-image-gen"))
 from gimp_image_gen import generate_image, generate_image_with_ai
 
+# Import enhancement modules
+try:
+    from enhance_image import ImageEnhancer
+    from preprocess_frames import FramePreprocessor
+    ENHANCEMENT_AVAILABLE = True
+except ImportError:
+    ENHANCEMENT_AVAILABLE = False
+
 
 class AnimationGenerator:
     """Generate animated GIF from a sequence of text prompts"""
     
-    def __init__(self, output_dir="animations", frame_rate=10, resolution=(512, 512)):
+    def __init__(self, output_dir="animations", frame_rate=10, resolution=(512, 512), 
+                 enhance=False, enhancement_preset='medium', use_gimp=False):
         """
         Initialize animation generator
         
@@ -25,14 +34,25 @@ class AnimationGenerator:
             output_dir (str): Directory to save frames and final GIF
             frame_rate (int): Frames per second for the animation
             resolution (tuple): Output resolution (width, height)
+            enhance (bool): Whether to enhance frames after generation
+            enhancement_preset (str): Enhancement preset (light|medium|aggressive)
+            use_gimp (bool): Whether to use GIMP for enhancement
         """
         self.output_dir = output_dir
         self.frame_rate = frame_rate
         self.resolution = resolution
         self.frame_duration = int(1000 / frame_rate)  # milliseconds per frame
+        self.enhance = enhance
+        self.enhancement_preset = enhancement_preset
+        self.use_gimp = use_gimp
         
         # Create output directory
         os.makedirs(output_dir, exist_ok=True)
+        
+        # Initialize enhancement if enabled
+        if self.enhance and not ENHANCEMENT_AVAILABLE:
+            print("⚠ Warning: Enhancement modules not available. Frames will not be enhanced.")
+            self.enhance = False
         
     def generate_frame(self, prompt, frame_number, use_ai=True):
         """
@@ -93,6 +113,8 @@ class AnimationGenerator:
         print(f"📁 Output directory: {self.output_dir}")
         print(f"📏 Resolution: {self.resolution[0]}x{self.resolution[1]}")
         print(f"🎞️  Frame rate: {self.frame_rate} fps")
+        if self.enhance:
+            print(f"✨ Enhancement: {self.enhancement_preset} preset")
         print(f"{'='*60}\n")
         
         frame_paths = []
@@ -104,7 +126,34 @@ class AnimationGenerator:
             else:
                 print(f"\n⚠ Warning: Frame {idx} failed to generate")
         
+        # Enhance frames if requested
+        if self.enhance and frame_paths and ENHANCEMENT_AVAILABLE:
+            frame_paths = self._enhance_frames(frame_paths)
+        
         return frame_paths
+    
+    def _enhance_frames(self, frame_paths):
+        """Enhance all generated frames"""
+        print(f"\n{'='*60}")
+        print(f"✨ Enhancing {len(frame_paths)} frames")
+        print(f"{'='*60}\n")
+        
+        preprocessor = FramePreprocessor(use_gimp=self.use_gimp)
+        enhanced_dir = self.output_dir + '_enhanced'
+        
+        result = preprocessor.preprocess_frames(
+            self.output_dir,
+            output_directory=enhanced_dir,
+            preset=self.enhancement_preset
+        )
+        
+        if result['status'] == 'ok' and result['enhanced_frames']:
+            # Update output directory to use enhanced frames
+            self.output_dir = enhanced_dir
+            return result['enhanced_frames']
+        else:
+            print(f"⚠ Enhancement failed or incomplete, using original frames")
+            return frame_paths
     
     def validate_frames(self, frame_paths):
         """
@@ -255,6 +304,22 @@ def main():
         default=1,
         help="Generate N interpolated frames between each prompt (default: 1)"
     )
+    parser.add_argument(
+        "--enhance",
+        action="store_true",
+        help="Enhance frames after generation for better quality"
+    )
+    parser.add_argument(
+        "--enhancement-preset",
+        choices=['light', 'medium', 'aggressive'],
+        default='medium',
+        help="Enhancement preset (default: medium)"
+    )
+    parser.add_argument(
+        "--use-gimp-enhance",
+        action="store_true",
+        help="Use GIMP for frame enhancement (slower but more advanced)"
+    )
     
     args = parser.parse_args()
     
@@ -262,7 +327,10 @@ def main():
     generator = AnimationGenerator(
         output_dir=args.output_dir,
         frame_rate=args.frame_rate,
-        resolution=(args.width, args.height)
+        resolution=(args.width, args.height),
+        enhance=args.enhance,
+        enhancement_preset=args.enhancement_preset,
+        use_gimp=args.use_gimp_enhance
     )
     
     # Interpolate prompts if requested

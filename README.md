@@ -15,11 +15,13 @@ GIMP MCP is an AI-powered image generation tool that integrates with VS Code thr
 ### ✨ Key Features
 
 - 🤖 **AI-Powered**: Uses Stable Diffusion for realistic image generation
+- ✨ **Smart Enhancement**: Auto-enhance images with denoise, sharpen, and artifact removal
 - 🎯 **VS Code Integrated**: Works seamlessly with GPT-4o Agent via MCP
 - ⚡ **Fast**: Sub-second generation for sketches, ~10s for AI images
 - 🎨 **Dual Mode**: AI-generated or quick PIL-based drafts
-- 📦 **Batch Processing**: Generate multiple images at once
-- 🎬 **Animation Support**: Create animated GIFs from text sequences
+- 📦 **Batch Processing**: Generate and enhance multiple images at once
+- 🎬 **Animation Support**: Create animated GIFs with automatic frame enhancement
+- 🖼️ **GIMP Integration**: Optional GIMP batch operations for professional-grade enhancement
 - 🛠️ **Easy Setup**: Simple bash script for quick generation
 
 ---
@@ -120,6 +122,34 @@ Create animated GIFs from text sequences:
   "mountain_animation"
 ```
 
+### Enhanced Animation (New!)
+
+Generate with automatic frame enhancement:
+```bash
+python3 generate_animation.py \
+  --prompts "Frame 1" "Frame 2" "Frame 3" \
+  --use-ai \
+  --enhance \
+  --enhancement-preset medium \
+  --output-name enhanced_animation.gif
+```
+
+### Image Enhancement
+
+Enhance existing images:
+```bash
+# Basic enhancement
+python3 enhance_image.py input.png -o output.png
+
+# With GIMP for professional quality
+python3 enhance_image.py input.png -o output.png --use-gimp --preset aggressive
+
+# Batch enhance animation frames
+python3 preprocess_frames.py animations/ -o animations_enhanced/
+```
+
+See **[ENHANCEMENT_GUIDE.md](ENHANCEMENT_GUIDE.md)** for complete enhancement documentation.
+
 See **[ANIMATION_GUIDE.md](ANIMATION_GUIDE.md)** for detailed animation features.
 
 ---
@@ -155,7 +185,7 @@ GimpMCP/
 │   └── settings.json           # VS Code MCP configuration
 ├── MCP/
 │   └── gimp-image-gen/
-│       ├── manifest.json       # MCP tool definition
+│       ├── manifest.json       # MCP tool definition (v2.0)
 │       └── gimp_image_gen.py   # Core image generator
 ├── output/                     # Generated images
 ├── animations/                 # Animation frames and GIFs
@@ -163,7 +193,11 @@ GimpMCP/
 ├── generate_animation.sh       # Animation generation script
 ├── generate_animation.py       # Animation generator (Python)
 ├── batch_generate.py           # Batch processing
+├── enhance_image.py            # Image enhancement tool (NEW)
+├── preprocess_frames.py        # Frame batch enhancement (NEW)
 ├── requirements.txt            # Python dependencies
+├── ENHANCEMENT_GUIDE.md        # Enhancement documentation (NEW)
+├── FEATURES.md                 # Feature roadmap (NEW)
 └── README.md                   # This file
 ```
 

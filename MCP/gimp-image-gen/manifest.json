@@ -1,7 +1,7 @@
 {
   "name": "gimp-image-gen",
-  "version": "1.0.0",
-  "description": "MCP tool for generating storyboard images from text prompts using PIL/Pillow and optional GIMP processing",
+  "version": "2.0.0",
+  "description": "MCP tool for generating and enhancing images from text prompts using PIL/Pillow, AI generation, and optional GIMP processing",
   "author": "GimpMCP Project",
   "repository": "https://github.com/your-org/GimpMCP",
   "tools": [
@@ -20,19 +20,203 @@
           "type": "string",
           "description": "Path where the generated PNG image will be saved",
           "required": true
+        },
+        "use_ai": {
+          "type": "boolean",
+          "description": "Whether to use AI generation (Stable Diffusion) for high-quality output",
+          "required": false,
+          "default": false
         }
       },
       "returns": {
         "type": "string",
         "description": "Path to the generated image file"
       }
+    },
+    {
+      "name": "generate-animation",
+      "type": "python",
+      "entry": "../../generate_animation.py",
+      "description": "Generate animated GIF from a sequence of text prompts with optional frame enhancement.",
+      "parameters": {
+        "prompts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of text descriptions for each animation frame",
+          "required": true
+        },
+        "output_dir": {
+          "type": "string",
+          "description": "Directory to save frames and final GIF",
+          "required": false,
+          "default": "animations"
+        },
+        "output_name": {
+          "type": "string",
+          "description": "Name of the output GIF file",
+          "required": false,
+          "default": "animation.gif"
+        },
+        "frame_rate": {
+          "type": "integer",
+          "description": "Frames per second for the animation",
+          "required": false,
+          "default": 10
+        },
+        "width": {
+          "type": "integer",
+          "description": "Frame width in pixels",
+          "required": false,
+          "default": 512
+        },
+        "height": {
+          "type": "integer",
+          "description": "Frame height in pixels",
+          "required": false,
+          "default": 512
+        },
+        "use_ai": {
+          "type": "boolean",
+          "description": "Use AI generation for higher quality frames",
+          "required": false,
+          "default": false
+        },
+        "enhance": {
+          "type": "boolean",
+          "description": "Automatically enhance frames after generation",
+          "required": false,
+          "default": false
+        },
+        "enhancement_preset": {
+          "type": "string",
+          "enum": ["light", "medium", "aggressive"],
+          "description": "Enhancement preset to use if enhance is enabled",
+          "required": false,
+          "default": "medium"
+        }
+      },
+      "returns": {
+        "type": "string",
+        "description": "Path to the generated animated GIF"
+      }
+    },
+    {
+      "name": "enhance-image",
+      "type": "python",
+      "entry": "../../enhance_image.py",
+      "description": "Enhance image quality with auto-levels, denoise, sharpen, and artifact removal using Pillow or GIMP.",
+      "parameters": {
+        "input": {
+          "type": "string",
+          "description": "Path to input image file",
+          "required": true
+        },
+        "output": {
+          "type": "string",
+          "description": "Path to save enhanced image",
+          "required": false
+        },
+        "preset": {
+          "type": "string",
+          "enum": ["light", "medium", "aggressive"],
+          "description": "Enhancement preset controlling the intensity of operations",
+          "required": false,
+          "default": "medium"
+        },
+        "use_gimp": {
+          "type": "boolean",
+          "description": "Use GIMP batch operations for advanced enhancement",
+          "required": false,
+          "default": false
+        }
+      },
+      "returns": {
+        "type": "object",
+        "description": "Enhancement result with status, message, and output path",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["ok", "error"]
+          },
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "output_path": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "name": "preprocess-frames",
+      "type": "python",
+      "entry": "../../preprocess_frames.py",
+      "description": "Batch enhance animation frames before GIF compilation for consistent quality.",
+      "parameters": {
+        "input_directory": {
+          "type": "string",
+          "description": "Directory containing animation frames",
+          "required": true
+        },
+        "output_directory": {
+          "type": "string",
+          "description": "Directory to save enhanced frames",
+          "required": false
+        },
+        "preset": {
+          "type": "string",
+          "enum": ["light", "medium", "aggressive"],
+          "description": "Enhancement preset",
+          "required": false,
+          "default": "medium"
+        },
+        "pattern": {
+          "type": "string",
+          "description": "Glob pattern for frame files",
+          "required": false,
+          "default": "*.png"
+        },
+        "use_gimp": {
+          "type": "boolean",
+          "description": "Use GIMP for enhancement",
+          "required": false,
+          "default": false
+        }
+      },
+      "returns": {
+        "type": "object",
+        "description": "Preprocessing result with enhanced frame paths and statistics",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "enhanced_frames": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "success_count": {
+            "type": "integer"
+          },
+          "failure_count": {
+            "type": "integer"
+          }
+        }
+      }
     }
   ],
   "requirements": [
     "Pillow>=10.0.0",
+    "requests>=2.31.0",
     "Python>=3.9"
   ],
   "optional_dependencies": [
-    "GIMP>=3.0"
+    "GIMP>=2.10 (for advanced enhancement features)"
   ]
 }
